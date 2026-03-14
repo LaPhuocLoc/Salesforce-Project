@@ -585,10 +585,22 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 24px;
-            margin: 16px 0;
+            padding: 24px 16px;
+            margin: 20px 0;
             overflow-x: auto;
-            text-align: center;
+            width: 100%;
+        }
+
+        .mermaid-wrapper .mermaid {
+            width: 100%;
+        }
+
+        /* Force SVG to fill container width */
+        .mermaid-wrapper svg {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            display: block;
         }
 
         /* ── MOBILE TOGGLE ── */
@@ -984,7 +996,7 @@
                 lineColor: '#4caf50',
                 secondaryColor: '#1f2937',
                 tertiaryColor: '#0d1117',
-                fontSize: '14px',
+                fontSize: '16px',
             },
         });
 

@@ -1,946 +1,1083 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Salesforce Bootcamp Manager — Docs</title>
-  <meta name="description" content="Project documentation hub for Salesforce Certification Bootcamp Manager — Build Plan, BDD, Flow diagrams and team member guides." />
-
-  <!-- marked.js for Markdown rendering -->
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <!-- mermaid.js for Flow/ERD diagrams -->
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <!-- highlight.js for code blocks -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/core.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/java.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/javascript.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/xml.min.js"></script>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-
-  <style>
-    :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --surface2: #1f2937;
-      --border: #30363d;
-      --accent: #1b5e20;
-      --accent-bright: #4caf50;
-      --accent-glow: rgba(76,175,80,0.15);
-      --text: #e6edf3;
-      --text-muted: #8b949e;
-      --text-dim: #6e7681;
-      --link: #58a6ff;
-      --code-bg: #161b22;
-      --sidebar-w: 280px;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      min-height: 100vh;
-      font-size: 15px;
-      line-height: 1.7;
-    }
-
-    /* ── SIDEBAR ── */
-    .sidebar {
-      width: var(--sidebar-w);
-      min-height: 100vh;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0; left: 0;
-      overflow-y: auto;
-      z-index: 100;
-      transition: transform .3s;
-    }
-
-    .sidebar-header {
-      padding: 24px 20px 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .project-badge {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--accent-bright);
-      background: var(--accent-glow);
-      border: 1px solid rgba(76,175,80,.3);
-      padding: 3px 8px;
-      border-radius: 20px;
-      display: inline-block;
-      margin-bottom: 10px;
-    }
-
-    .sidebar-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.3;
-    }
-
-    .sidebar-subtitle {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .sidebar-nav {
-      padding: 12px 0;
-      flex: 1;
-    }
-
-    .nav-section {
-      padding: 10px 20px 4px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 20px;
-      cursor: pointer;
-      border-left: 3px solid transparent;
-      transition: all .15s;
-      color: var(--text-muted);
-      font-size: 13.5px;
-    }
-
-    .nav-item:hover {
-      background: rgba(255,255,255,.04);
-      color: var(--text);
-    }
-
-    .nav-item.active {
-      border-left-color: var(--accent-bright);
-      background: var(--accent-glow);
-      color: var(--accent-bright);
-    }
-
-    .nav-icon {
-      font-size: 16px;
-      flex-shrink: 0;
-      width: 20px;
-      text-align: center;
-    }
-
-    .nav-label { flex: 1; }
-
-    .nav-badge {
-      font-size: 10px;
-      padding: 1px 6px;
-      border-radius: 10px;
-      background: var(--surface2);
-      color: var(--text-dim);
-    }
-
-    .member-badge {
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .m1 { background: #1b4332; color: #6ee7b7; }
-    .m2 { background: #1e3a5f; color: #93c5fd; }
-    .m3 { background: #3b1f5e; color: #c4b5fd; }
-    .m4 { background: #4a1d3f; color: #f9a8d4; }
-    .m5 { background: #4a2e0f; color: #fcd34d; }
-
-    .sidebar-footer {
-      padding: 16px 20px;
-      border-top: 1px solid var(--border);
-      font-size: 11px;
-      color: var(--text-dim);
-    }
-
-    /* ── MAIN CONTENT ── */
-    .main {
-      margin-left: var(--sidebar-w);
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    .topbar {
-      height: 56px;
-      background: rgba(13,17,23,.85);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      display: flex;
-      align-items: center;
-      padding: 0 32px;
-      gap: 16px;
-    }
-
-    .topbar-doc-name {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-      flex: 1;
-    }
-
-    .topbar-file {
-      font-size: 12px;
-      color: var(--text-dim);
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    .loading-bar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-bright));
-      transform-origin: left;
-      transform: scaleX(0);
-      transition: transform .3s;
-      z-index: 200;
-    }
-
-    .loading-bar.active { transform: scaleX(0.7); }
-    .loading-bar.done { transform: scaleX(1); opacity: 0; transition: transform .2s, opacity .3s .1s; }
-
-    /* ── HOME GRID ── */
-    .home-view {
-      padding: 40px 48px;
-    }
-
-    .hero {
-      margin-bottom: 40px;
-    }
-
-    .hero h1 {
-      font-size: 32px;
-      font-weight: 800;
-      background: linear-gradient(135deg, #e6edf3 0%, #4caf50 60%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 8px;
-      line-height: 1.2;
-    }
-
-    .hero p {
-      color: var(--text-muted);
-      font-size: 15px;
-      max-width: 560px;
-    }
-
-    .stats-row {
-      display: flex;
-      gap: 20px;
-      margin: 24px 0 40px;
-      flex-wrap: wrap;
-    }
-
-    .stat {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .stat-icon { font-size: 24px; }
-
-    .stat-value {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--accent-bright);
-      line-height: 1;
-    }
-
-    .stat-label {
-      font-size: 11px;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-
-    .section-title {
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: var(--text-dim);
-      margin-bottom: 16px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-      margin-bottom: 40px;
-    }
-
-    .doc-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px;
-      cursor: pointer;
-      transition: all .2s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .doc-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: var(--card-accent, var(--accent-bright));
-      opacity: 0;
-      transition: opacity .2s;
-    }
-
-    .doc-card:hover {
-      border-color: rgba(76,175,80,.4);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(0,0,0,.4);
-    }
-
-    .doc-card:hover::before { opacity: 1; }
-
-    .doc-card:hover .doc-title { color: var(--text); }
-
-    .card-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .card-icon { font-size: 28px; }
-
-    .card-size {
-      font-size: 10px;
-      color: var(--text-dim);
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    .doc-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-      line-height: 1.3;
-      transition: color .2s;
-    }
-
-    .doc-desc {
-      font-size: 12px;
-      color: var(--text-dim);
-      line-height: 1.5;
-    }
-
-    .card-footer {
-      margin-top: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .tag {
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-weight: 600;
-    }
-
-    /* ── MARKDOWN VIEWER ── */
-    .doc-view {
-      padding: 40px 48px;
-      max-width: 900px;
-      display: none;
-    }
-
-    .doc-view.visible { display: block; }
-
-    .markdown-body {
-      color: var(--text);
-      font-size: 15px;
-      line-height: 1.8;
-    }
-
-    .markdown-body h1 {
-      font-size: 28px;
-      font-weight: 800;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 14px;
-      margin: 0 0 24px;
-      color: var(--text);
-    }
-
-    .markdown-body h2 {
-      font-size: 20px;
-      font-weight: 700;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
-      margin: 40px 0 16px;
-      color: var(--text);
-    }
-
-    .markdown-body h3 {
-      font-size: 16px;
-      font-weight: 600;
-      margin: 28px 0 12px;
-      color: var(--text);
-    }
-
-    .markdown-body h4 {
-      font-size: 14px;
-      font-weight: 600;
-      margin: 20px 0 8px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: .04em;
-    }
-
-    .markdown-body p {
-      margin: 0 0 16px;
-      color: var(--text);
-    }
-
-    .markdown-body strong { color: var(--text); font-weight: 600; }
-
-    .markdown-body a { color: var(--link); text-decoration: none; }
-    .markdown-body a:hover { text-decoration: underline; }
-
-    .markdown-body ul, .markdown-body ol {
-      margin: 0 0 16px 24px;
-    }
-
-    .markdown-body li {
-      margin-bottom: 6px;
-      color: var(--text);
-    }
-
-    .markdown-body code {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      padding: 2px 6px;
-      border-radius: 4px;
-      color: #e2b96f;
-    }
-
-    .markdown-body pre {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      overflow-x: auto;
-      margin: 16px 0;
-    }
-
-    .markdown-body pre code {
-      background: none;
-      border: none;
-      padding: 0;
-      color: var(--text);
-      font-size: 13px;
-    }
-
-    .markdown-body blockquote {
-      border-left: 3px solid var(--accent-bright);
-      margin: 16px 0;
-      padding: 8px 16px;
-      background: var(--accent-glow);
-      border-radius: 0 8px 8px 0;
-      color: var(--text-muted);
-    }
-
-    .markdown-body table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0;
-      font-size: 13.5px;
-    }
-
-    .markdown-body th {
-      background: var(--surface2);
-      padding: 10px 14px;
-      text-align: left;
-      border: 1px solid var(--border);
-      font-weight: 600;
-      color: var(--text);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-    }
-
-    .markdown-body td {
-      padding: 9px 14px;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      vertical-align: top;
-    }
-
-    .markdown-body tr:nth-child(even) td {
-      background: rgba(255,255,255,.02);
-    }
-
-    .markdown-body hr {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 32px 0;
-    }
-
-    /* Mermaid diagrams */
-    .mermaid-wrapper {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      margin: 16px 0;
-      overflow-x: auto;
-      text-align: center;
-    }
-
-    /* ── MOBILE TOGGLE ── */
-    .menu-toggle {
-      display: none;
-      position: fixed;
-      bottom: 24px; right: 24px;
-      width: 48px; height: 48px;
-      background: var(--accent);
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      z-index: 200;
-      font-size: 20px;
-      color: white;
-      box-shadow: 0 4px 20px rgba(0,0,0,.5);
-    }
-
-    @media (max-width: 768px) {
-      :root { --sidebar-w: 260px; }
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); box-shadow: 4px 0 32px rgba(0,0,0,.5); }
-      .main { margin-left: 0; }
-      .home-view, .doc-view { padding: 24px 20px; }
-      .menu-toggle { display: flex; align-items: center; justify-content: center; }
-      .hero h1 { font-size: 24px; }
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #484f58; }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Salesforce Bootcamp Manager — Docs</title>
+    <meta name="description"
+        content="Project documentation hub for Salesforce Certification Bootcamp Manager — Build Plan, BDD, Flow diagrams and team member guides." />
+
+    <!-- marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- mermaid.js for Flow/ERD diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <!-- highlight.js for code blocks (full bundle — exposes hljs globally) -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --surface2: #1f2937;
+            --border: #30363d;
+            --accent: #1b5e20;
+            --accent-bright: #4caf50;
+            --accent-glow: rgba(76, 175, 80, 0.15);
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --text-dim: #6e7681;
+            --link: #58a6ff;
+            --code-bg: #161b22;
+            --sidebar-w: 280px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: var(--sidebar-w);
+            min-height: 100vh;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform .3s;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .project-badge {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--accent-bright);
+            background: var(--accent-glow);
+            border: 1px solid rgba(76, 175, 80, .3);
+            padding: 3px 8px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .sidebar-nav {
+            padding: 12px 0;
+            flex: 1;
+        }
+
+        .nav-section {
+            padding: 10px 20px 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 20px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all .15s;
+            color: var(--text-muted);
+            font-size: 13.5px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, .04);
+            color: var(--text);
+        }
+
+        .nav-item.active {
+            border-left-color: var(--accent-bright);
+            background: var(--accent-glow);
+            color: var(--accent-bright);
+        }
+
+        .nav-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-label {
+            flex: 1;
+        }
+
+        .nav-badge {
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 10px;
+            background: var(--surface2);
+            color: var(--text-dim);
+        }
+
+        .member-badge {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .m1 {
+            background: #1b4332;
+            color: #6ee7b7;
+        }
+
+        .m2 {
+            background: #1e3a5f;
+            color: #93c5fd;
+        }
+
+        .m3 {
+            background: #3b1f5e;
+            color: #c4b5fd;
+        }
+
+        .m4 {
+            background: #4a1d3f;
+            color: #f9a8d4;
+        }
+
+        .m5 {
+            background: #4a2e0f;
+            color: #fcd34d;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        /* ── MAIN CONTENT ── */
+        .main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 56px;
+            background: rgba(13, 17, 23, .85);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+            gap: 16px;
+        }
+
+        .topbar-doc-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .topbar-file {
+            font-size: 12px;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+            transform-origin: left;
+            transform: scaleX(0);
+            transition: transform .3s;
+            z-index: 200;
+        }
+
+        .loading-bar.active {
+            transform: scaleX(0.7);
+        }
+
+        .loading-bar.done {
+            transform: scaleX(1);
+            opacity: 0;
+            transition: transform .2s, opacity .3s .1s;
+        }
+
+        /* ── HOME GRID ── */
+        .home-view {
+            padding: 40px 48px;
+        }
+
+        .hero {
+            margin-bottom: 40px;
+        }
+
+        .hero h1 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #e6edf3 0%, #4caf50 60%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 15px;
+            max-width: 560px;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 20px;
+            margin: 24px 0 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stat-icon {
+            font-size: 24px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent-bright);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .doc-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all .2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .doc-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--card-accent, var(--accent-bright));
+            opacity: 0;
+            transition: opacity .2s;
+        }
+
+        .doc-card:hover {
+            border-color: rgba(76, 175, 80, .4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .4);
+        }
+
+        .doc-card:hover::before {
+            opacity: 1;
+        }
+
+        .doc-card:hover .doc-title {
+            color: var(--text);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .card-icon {
+            font-size: 28px;
+        }
+
+        .card-size {
+            font-size: 10px;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .doc-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            line-height: 1.3;
+            transition: color .2s;
+        }
+
+        .doc-desc {
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        .card-footer {
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* ── MARKDOWN VIEWER ── */
+        .doc-view {
+            padding: 40px 48px;
+            max-width: 900px;
+            display: none;
+        }
+
+        .doc-view.visible {
+            display: block;
+        }
+
+        .markdown-body {
+            color: var(--text);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .markdown-body h1 {
+            font-size: 28px;
+            font-weight: 800;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 14px;
+            margin: 0 0 24px;
+            color: var(--text);
+        }
+
+        .markdown-body h2 {
+            font-size: 20px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin: 40px 0 16px;
+            color: var(--text);
+        }
+
+        .markdown-body h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 28px 0 12px;
+            color: var(--text);
+        }
+
+        .markdown-body h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 20px 0 8px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .markdown-body p {
+            margin: 0 0 16px;
+            color: var(--text);
+        }
+
+        .markdown-body strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .markdown-body a {
+            color: var(--link);
+            text-decoration: none;
+        }
+
+        .markdown-body a:hover {
+            text-decoration: underline;
+        }
+
+        .markdown-body ul,
+        .markdown-body ol {
+            margin: 0 0 16px 24px;
+        }
+
+        .markdown-body li {
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+
+        .markdown-body code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e2b96f;
+        }
+
+        .markdown-body pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        .markdown-body pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .markdown-body blockquote {
+            border-left: 3px solid var(--accent-bright);
+            margin: 16px 0;
+            padding: 8px 16px;
+            background: var(--accent-glow);
+            border-radius: 0 8px 8px 0;
+            color: var(--text-muted);
+        }
+
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 13.5px;
+        }
+
+        .markdown-body th {
+            background: var(--surface2);
+            padding: 10px 14px;
+            text-align: left;
+            border: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .markdown-body td {
+            padding: 9px 14px;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            vertical-align: top;
+        }
+
+        .markdown-body tr:nth-child(even) td {
+            background: rgba(255, 255, 255, .02);
+        }
+
+        .markdown-body hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 32px 0;
+        }
+
+        /* Mermaid diagrams */
+        .mermaid-wrapper {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        /* ── MOBILE TOGGLE ── */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 200;
+            font-size: 20px;
+            color: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .5);
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --sidebar-w: 260px;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: 4px 0 32px rgba(0, 0, 0, .5);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .home-view,
+            .doc-view {
+                padding: 24px 20px;
+            }
+
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 24px;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #484f58;
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="loading-bar" id="loadingBar"></div>
+    <div class="loading-bar" id="loadingBar"></div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-header">
-    <div class="project-badge">Salesforce PD1</div>
-    <div class="sidebar-title">Bootcamp Manager</div>
-    <div class="sidebar-subtitle">3 Tuần · 20 Giờ · 5 Thành viên</div>
-  </div>
-
-  <nav class="sidebar-nav">
-    <div class="nav-section">Tổng quan</div>
-    <div class="nav-item active" onclick="showHome()" id="nav-home">
-      <span class="nav-icon">🏠</span>
-      <span class="nav-label">Trang chủ</span>
-    </div>
-
-    <div class="nav-section">Tài liệu thiết kế</div>
-    <div class="nav-item" onclick="loadDoc('Salesforce_Bootcamp_Manager_BDD.md', 'BDD — Basic Design Document', this)">
-      <span class="nav-icon">📋</span>
-      <span class="nav-label">BDD</span>
-      <span class="nav-badge">29KB</span>
-    </div>
-    <div class="nav-item" onclick="loadDoc('Build_Plan_Master.md', 'Master Build Plan', this)">
-      <span class="nav-icon">🚀</span>
-      <span class="nav-label">Build Plan</span>
-      <span class="nav-badge">22KB</span>
-    </div>
-    <div class="nav-item" onclick="loadDoc('Flow.md', 'Business Process Flows', this)">
-      <span class="nav-icon">🔄</span>
-      <span class="nav-label">Flows</span>
-      <span class="nav-badge">8KB</span>
-    </div>
-    <div class="nav-item" onclick="loadDoc('Diagram.md', 'ERD Data Model Diagram', this)">
-      <span class="nav-icon">🗄️</span>
-      <span class="nav-label">ERD Diagram</span>
-      <span class="nav-badge">1KB</span>
-    </div>
-
-    <div class="nav-section">Hướng dẫn thành viên</div>
-    <div class="nav-item" onclick="loadDoc('Member_1_Guide.md', 'Member 1 — Data Model & Security', this)">
-      <span class="member-badge m1">1</span>
-      <span class="nav-label">Data Model & Security</span>
-    </div>
-    <div class="nav-item" onclick="loadDoc('Member_2_Guide.md', 'Member 2 — Apex Backend', this)">
-      <span class="member-badge m2">2</span>
-      <span class="nav-label">Apex Backend</span>
-    </div>
-    <div class="nav-item" onclick="loadDoc('Member_3_Guide.md', 'Member 3 — Trigger & Async', this)">
-      <span class="member-badge m3">3</span>
-      <span class="nav-label">Trigger & Async Apex</span>
-    </div>
-    <div class="nav-item" onclick="loadDoc('Member_4_Guide.md', 'Member 4 — LWC UI', this)">
-      <span class="member-badge m4">4</span>
-      <span class="nav-label">LWC UI</span>
-    </div>
-    <div class="nav-item" onclick="loadDoc('Member_5_Guide.md', 'Member 5 — Flows & QA', this)">
-      <span class="member-badge m5">5</span>
-      <span class="nav-label">Flows & QA</span>
-    </div>
-  </nav>
-
-  <div class="sidebar-footer">
-    Salesforce Certification Bootcamp Manager
-  </div>
-</aside>
-
-<!-- MAIN -->
-<main class="main">
-  <div class="topbar">
-    <span class="topbar-doc-name" id="topbarTitle">📁 Trang chủ</span>
-    <span class="topbar-file" id="topbarFile"></span>
-  </div>
-
-  <!-- HOME VIEW -->
-  <div class="home-view" id="homeView">
-    <div class="hero">
-      <h1>Salesforce Bootcamp Manager</h1>
-      <p>Trung tâm tài liệu dự án · Platform Developer I · MVP 3 tuần · Team 5 thành viên</p>
-    </div>
-
-    <div class="stats-row">
-      <div class="stat">
-        <span class="stat-icon">📦</span>
-        <div>
-          <div class="stat-value">5</div>
-          <div class="stat-label">Custom Objects</div>
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="project-badge">Salesforce PD1</div>
+            <div class="sidebar-title">Bootcamp Manager</div>
+            <div class="sidebar-subtitle">3 Tuần · 20 Giờ · 5 Thành viên</div>
         </div>
-      </div>
-      <div class="stat">
-        <span class="stat-icon">⚡</span>
-        <div>
-          <div class="stat-value">4</div>
-          <div class="stat-label">LWC Components</div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">Tổng quan</div>
+            <div class="nav-item active" onclick="showHome()" id="nav-home">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Trang chủ</span>
+            </div>
+
+            <div class="nav-section">Tài liệu thiết kế</div>
+            <div class="nav-item"
+                onclick="loadDoc('Salesforce_Bootcamp_Manager_BDD.md', 'BDD — Basic Design Document', this)">
+                <span class="nav-icon">📋</span>
+                <span class="nav-label">BDD</span>
+                <span class="nav-badge">29KB</span>
+            </div>
+            <div class="nav-item" onclick="loadDoc('Build_Plan_Master.md', 'Master Build Plan', this)">
+                <span class="nav-icon">🚀</span>
+                <span class="nav-label">Build Plan</span>
+                <span class="nav-badge">22KB</span>
+            </div>
+            <div class="nav-item" onclick="loadDoc('Flow.md', 'Business Process Flows', this)">
+                <span class="nav-icon">🔄</span>
+                <span class="nav-label">Flows</span>
+                <span class="nav-badge">8KB</span>
+            </div>
+            <div class="nav-item" onclick="loadDoc('Diagram.md', 'ERD Data Model Diagram', this)">
+                <span class="nav-icon">🗄️</span>
+                <span class="nav-label">ERD Diagram</span>
+                <span class="nav-badge">1KB</span>
+            </div>
+
+            <div class="nav-section">Hướng dẫn thành viên</div>
+            <div class="nav-item" onclick="loadDoc('Member_1_Guide.md', 'Member 1 — Data Model & Security', this)">
+                <span class="member-badge m1">1</span>
+                <span class="nav-label">Data Model & Security</span>
+            </div>
+            <div class="nav-item" onclick="loadDoc('Member_2_Guide.md', 'Member 2 — Apex Backend', this)">
+                <span class="member-badge m2">2</span>
+                <span class="nav-label">Apex Backend</span>
+            </div>
+            <div class="nav-item" onclick="loadDoc('Member_3_Guide.md', 'Member 3 — Trigger & Async', this)">
+                <span class="member-badge m3">3</span>
+                <span class="nav-label">Trigger & Async Apex</span>
+            </div>
+            <div class="nav-item" onclick="loadDoc('Member_4_Guide.md', 'Member 4 — LWC UI', this)">
+                <span class="member-badge m4">4</span>
+                <span class="nav-label">LWC UI</span>
+            </div>
+            <div class="nav-item" onclick="loadDoc('Member_5_Guide.md', 'Member 5 — Flows & QA', this)">
+                <span class="member-badge m5">5</span>
+                <span class="nav-label">Flows & QA</span>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            Salesforce Certification Bootcamp Manager
         </div>
-      </div>
-      <div class="stat">
-        <span class="stat-icon">🔄</span>
-        <div>
-          <div class="stat-value">3</div>
-          <div class="stat-label">Flows</div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+        <div class="topbar">
+            <span class="topbar-doc-name" id="topbarTitle">📁 Trang chủ</span>
+            <span class="topbar-file" id="topbarFile"></span>
         </div>
-      </div>
-      <div class="stat">
-        <span class="stat-icon">🕐</span>
-        <div>
-          <div class="stat-value">20h</div>
-          <div class="stat-label">3 Tuần</div>
+
+        <!-- HOME VIEW -->
+        <div class="home-view" id="homeView">
+            <div class="hero">
+                <h1>Salesforce Bootcamp Manager</h1>
+                <p>Trung tâm tài liệu dự án · Platform Developer I · MVP 3 tuần · Team 5 thành viên</p>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat">
+                    <span class="stat-icon">📦</span>
+                    <div>
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Custom Objects</div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">⚡</span>
+                    <div>
+                        <div class="stat-value">4</div>
+                        <div class="stat-label">LWC Components</div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">🔄</span>
+                    <div>
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Flows</div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">🕐</span>
+                    <div>
+                        <div class="stat-value">20h</div>
+                        <div class="stat-label">3 Tuần</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">📄 Tài liệu thiết kế</div>
+            <div class="grid">
+                <div class="doc-card"
+                    onclick="loadDocByFileName('Salesforce_Bootcamp_Manager_BDD.md', 'BDD — Basic Design Document')"
+                    style="--card-accent:#4caf50">
+                    <div class="card-header">
+                        <span class="card-icon">📋</span>
+                        <span class="card-size">29 KB</span>
+                    </div>
+                    <div class="doc-title">BDD — Basic Design Document</div>
+                    <div class="doc-desc">Toàn bộ đặc tả: Data Model, Apex Architecture, LWC, Security, Reports, PD1
+                        Coverage, Checklist 26 mục.</div>
+                    <div class="card-footer">
+                        <span class="tag" style="background:#1b4332;color:#6ee7b7">Thiết kế</span>
+                        <span class="tag" style="background:#1e3a5f;color:#93c5fd">616 dòng</span>
+                    </div>
+                </div>
+
+                <div class="doc-card" onclick="loadDocByFileName('Build_Plan_Master.md', 'Master Build Plan')"
+                    style="--card-accent:#ff9800">
+                    <div class="card-header">
+                        <span class="card-icon">🚀</span>
+                        <span class="card-size">22 KB</span>
+                    </div>
+                    <div class="doc-title">Master Build Plan</div>
+                    <div class="doc-desc">Kế hoạch 3 tuần, 20 giờ, 5 members. Gantt chart, Dependencies, Risk, File
+                        Ownership, DoD 26 items.</div>
+                    <div class="card-footer">
+                        <span class="tag" style="background:#4a2e0f;color:#fcd34d">Kế hoạch</span>
+                        <span class="tag" style="background:#1e3a5f;color:#93c5fd">Tuần 1–3</span>
+                    </div>
+                </div>
+
+                <div class="doc-card" onclick="loadDocByFileName('Flow.md', 'Business Process Flows')"
+                    style="--card-accent:#2196f3">
+                    <div class="card-header">
+                        <span class="card-icon">🔄</span>
+                        <span class="card-size">7 KB</span>
+                    </div>
+                    <div class="doc-title">Business Process Flows</div>
+                    <div class="doc-desc">8 flowcharts: Enrollment, Mock Exam, Dashboard Loading, Admin Questions,
+                        Triggers, Batch, Approval.</div>
+                    <div class="card-footer">
+                        <span class="tag" style="background:#1e3a5f;color:#93c5fd">8 Flows</span>
+                        <span class="tag" style="background:#3b1f5e;color:#c4b5fd">Mermaid</span>
+                    </div>
+                </div>
+
+                <div class="doc-card" onclick="loadDocByFileName('Diagram.md', 'ERD Data Model Diagram')"
+                    style="--card-accent:#e91e63">
+                    <div class="card-header">
+                        <span class="card-icon">🗄️</span>
+                        <span class="card-size">1 KB</span>
+                    </div>
+                    <div class="doc-title">ERD Diagram</div>
+                    <div class="doc-desc">Entity Relationship Diagram: 5 Objects, Lookup, Master-Detail, Junction,
+                        Roll-up, Formula.</div>
+                    <div class="card-footer">
+                        <span class="tag" style="background:#3b1f5e;color:#c4b5fd">ERD</span>
+                        <span class="tag" style="background:#3b1f5e;color:#c4b5fd">Mermaid</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">👥 Hướng dẫn từng thành viên</div>
+            <div class="grid">
+                <div class="doc-card"
+                    onclick="loadDocByFileName('Member_1_Guide.md', 'Member 1 — Data Model & Security')"
+                    style="--card-accent:#6ee7b7">
+                    <div class="card-header">
+                        <div class="member-badge m1" style="width:36px;height:36px;font-size:16px">1</div>
+                        <span class="card-size">11 KB</span>
+                    </div>
+                    <div class="doc-title">Member 1 — Data Model & Security</div>
+                    <div class="doc-desc">21 tasks: 5 Custom Objects, OWD, Profiles, FLS, Permission Set, Sharing Rule,
+                        3 Reports, Dashboard, Home Page.</div>
+                    <div class="card-footer">
+                        <span class="tag" style="background:#1b4332;color:#6ee7b7">21 Tasks</span>
+                        <span class="tag" style="background:#1b4332;color:#6ee7b7">4 giờ</span>
+                    </div>
+                </div>
+
+                <div class="doc-card" onclick="loadDocByFileName('Member_2_Guide.md', 'Member 2 — Apex Backend')"
+                    style="--card-accent:#93c5fd">
+                    <div class="card-header">
+                        <div class="member-badge m2" style="width:36px;height:36px;font-size:16px">2</div>
+                        <span class="card-size">21 KB</span>
+                    </div>
+                    <div class="doc-title">Member 2 — Apex Backend</div>
+                    <div class="doc-desc">14 tasks: MockExamService, BootcampController (6 methods), TestFactory, 2 Test
+                        Classes, Coverage ≥75%.</div>
+                    <div class="card-footer">
+                        <span class="tag" style="background:#1e3a5f;color:#93c5fd">14 Tasks</span>
+                        <span class="tag" style="background:#1e3a5f;color:#93c5fd">4.2 giờ</span>
+                    </div>
+                </div>
+
+                <div class="doc-card"
+                    onclick="loadDocByFileName('Member_3_Guide.md', 'Member 3 — Trigger & Async Apex')"
+                    style="--card-accent:#c4b5fd">
+                    <div class="card-header">
+                        <div class="member-badge m3" style="width:36px;height:36px;font-size:16px">3</div>
+                        <span class="card-size">16 KB</span>
+                    </div>
+                    <div class="doc-title">Member 3 — Trigger & Async Apex</div>
+                    <div class="doc-desc">13 tasks: AttemptTrigger + Handler (bulkified), LeaderboardRefreshBatch,
+                        Scheduled Job, 2 Test Classes.</div>
+                    <div class="card-footer">
+                        <span class="tag" style="background:#3b1f5e;color:#c4b5fd">13 Tasks</span>
+                        <span class="tag" style="background:#3b1f5e;color:#c4b5fd">4.2 giờ</span>
+                    </div>
+                </div>
+
+                <div class="doc-card" onclick="loadDocByFileName('Member_4_Guide.md', 'Member 4 — LWC UI')"
+                    style="--card-accent:#f9a8d4">
+                    <div class="card-header">
+                        <div class="member-badge m4" style="width:36px;height:36px;font-size:16px">4</div>
+                        <span class="card-size">29 KB</span>
+                    </div>
+                    <div class="doc-title">Member 4 — LWC UI</div>
+                    <div class="doc-desc">13 tasks: mockExamFlow, dashboardView (Stats + Leaderboard),
+                        adminQuestionManage, newQuestionModal — full HTML/JS.</div>
+                    <div class="card-footer">
+                        <span class="tag" style="background:#4a1d3f;color:#f9a8d4">13 Tasks</span>
+                        <span class="tag" style="background:#4a1d3f;color:#f9a8d4">4.2 giờ</span>
+                    </div>
+                </div>
+
+                <div class="doc-card" onclick="loadDocByFileName('Member_5_Guide.md', 'Member 5 — Flows & QA')"
+                    style="--card-accent:#fcd34d">
+                    <div class="card-header">
+                        <div class="member-badge m5" style="width:36px;height:36px;font-size:16px">5</div>
+                        <span class="card-size">15 KB</span>
+                    </div>
+                    <div class="doc-title">Member 5 — Flows & QA</div>
+                    <div class="doc-desc">13 tasks: Record-Triggered Flow, Screen Flow Wizard, Approval Process,
+                        Lightning App, E2E Checklist 23 steps.</div>
+                    <div class="card-footer">
+                        <span class="tag" style="background:#4a2e0f;color:#fcd34d">13 Tasks</span>
+                        <span class="tag" style="background:#4a2e0f;color:#fcd34d">3.2 giờ</span>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <div class="section-title">📄 Tài liệu thiết kế</div>
-    <div class="grid">
-      <div class="doc-card" onclick="loadDocByFileName('Salesforce_Bootcamp_Manager_BDD.md', 'BDD — Basic Design Document')" style="--card-accent:#4caf50">
-        <div class="card-header">
-          <span class="card-icon">📋</span>
-          <span class="card-size">29 KB</span>
+        <!-- DOC VIEW -->
+        <div class="doc-view" id="docView">
+            <div class="markdown-body" id="markdownContent"></div>
         </div>
-        <div class="doc-title">BDD — Basic Design Document</div>
-        <div class="doc-desc">Toàn bộ đặc tả: Data Model, Apex Architecture, LWC, Security, Reports, PD1 Coverage, Checklist 26 mục.</div>
-        <div class="card-footer">
-          <span class="tag" style="background:#1b4332;color:#6ee7b7">Thiết kế</span>
-          <span class="tag" style="background:#1e3a5f;color:#93c5fd">616 dòng</span>
-        </div>
-      </div>
+    </main>
 
-      <div class="doc-card" onclick="loadDocByFileName('Build_Plan_Master.md', 'Master Build Plan')" style="--card-accent:#ff9800">
-        <div class="card-header">
-          <span class="card-icon">🚀</span>
-          <span class="card-size">22 KB</span>
-        </div>
-        <div class="doc-title">Master Build Plan</div>
-        <div class="doc-desc">Kế hoạch 3 tuần, 20 giờ, 5 members. Gantt chart, Dependencies, Risk, File Ownership, DoD 26 items.</div>
-        <div class="card-footer">
-          <span class="tag" style="background:#4a2e0f;color:#fcd34d">Kế hoạch</span>
-          <span class="tag" style="background:#1e3a5f;color:#93c5fd">Tuần 1–3</span>
-        </div>
-      </div>
+    <!-- Mobile toggle -->
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
 
-      <div class="doc-card" onclick="loadDocByFileName('Flow.md', 'Business Process Flows')" style="--card-accent:#2196f3">
-        <div class="card-header">
-          <span class="card-icon">🔄</span>
-          <span class="card-size">7 KB</span>
-        </div>
-        <div class="doc-title">Business Process Flows</div>
-        <div class="doc-desc">8 flowcharts: Enrollment, Mock Exam, Dashboard Loading, Admin Questions, Triggers, Batch, Approval.</div>
-        <div class="card-footer">
-          <span class="tag" style="background:#1e3a5f;color:#93c5fd">8 Flows</span>
-          <span class="tag" style="background:#3b1f5e;color:#c4b5fd">Mermaid</span>
-        </div>
-      </div>
+    <script>
+        // ── CONFIG ──
+        const DOCS = {
+            'Salesforce_Bootcamp_Manager_BDD.md': 'BDD — Basic Design Document',
+            'Build_Plan_Master.md': 'Master Build Plan',
+            'Flow.md': 'Business Process Flows',
+            'Diagram.md': 'ERD Data Model Diagram',
+            'Member_1_Guide.md': 'Member 1 — Data Model & Security',
+            'Member_2_Guide.md': 'Member 2 — Apex Backend',
+            'Member_3_Guide.md': 'Member 3 — Trigger & Async Apex',
+            'Member_4_Guide.md': 'Member 4 — LWC UI',
+            'Member_5_Guide.md': 'Member 5 — Flows & QA',
+        };
 
-      <div class="doc-card" onclick="loadDocByFileName('Diagram.md', 'ERD Data Model Diagram')" style="--card-accent:#e91e63">
-        <div class="card-header">
-          <span class="card-icon">🗄️</span>
-          <span class="card-size">1 KB</span>
-        </div>
-        <div class="doc-title">ERD Diagram</div>
-        <div class="doc-desc">Entity Relationship Diagram: 5 Objects, Lookup, Master-Detail, Junction, Roll-up, Formula.</div>
-        <div class="card-footer">
-          <span class="tag" style="background:#3b1f5e;color:#c4b5fd">ERD</span>
-          <span class="tag" style="background:#3b1f5e;color:#c4b5fd">Mermaid</span>
-        </div>
-      </div>
-    </div>
+        // ── MARKED CONFIG ──
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+        });
 
-    <div class="section-title">👥 Hướng dẫn từng thành viên</div>
-    <div class="grid">
-      <div class="doc-card" onclick="loadDocByFileName('Member_1_Guide.md', 'Member 1 — Data Model & Security')" style="--card-accent:#6ee7b7">
-        <div class="card-header">
-          <div class="member-badge m1" style="width:36px;height:36px;font-size:16px">1</div>
-          <span class="card-size">11 KB</span>
-        </div>
-        <div class="doc-title">Member 1 — Data Model & Security</div>
-        <div class="doc-desc">21 tasks: 5 Custom Objects, OWD, Profiles, FLS, Permission Set, Sharing Rule, 3 Reports, Dashboard, Home Page.</div>
-        <div class="card-footer">
-          <span class="tag" style="background:#1b4332;color:#6ee7b7">21 Tasks</span>
-          <span class="tag" style="background:#1b4332;color:#6ee7b7">4 giờ</span>
-        </div>
-      </div>
+        // ── MERMAID CONFIG ──
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            themeVariables: {
+                background: '#161b22',
+                primaryColor: '#1b5e20',
+                primaryTextColor: '#e6edf3',
+                primaryBorderColor: '#30363d',
+                lineColor: '#4caf50',
+                secondaryColor: '#1f2937',
+                tertiaryColor: '#0d1117',
+                fontSize: '14px',
+            },
+        });
 
-      <div class="doc-card" onclick="loadDocByFileName('Member_2_Guide.md', 'Member 2 — Apex Backend')" style="--card-accent:#93c5fd">
-        <div class="card-header">
-          <div class="member-badge m2" style="width:36px;height:36px;font-size:16px">2</div>
-          <span class="card-size">21 KB</span>
-        </div>
-        <div class="doc-title">Member 2 — Apex Backend</div>
-        <div class="doc-desc">14 tasks: MockExamService, BootcampController (6 methods), TestFactory, 2 Test Classes, Coverage ≥75%.</div>
-        <div class="card-footer">
-          <span class="tag" style="background:#1e3a5f;color:#93c5fd">14 Tasks</span>
-          <span class="tag" style="background:#1e3a5f;color:#93c5fd">4.2 giờ</span>
-        </div>
-      </div>
+        // Replace mermaid code blocks with divs before marked renders
+        function preprocessMermaid(md) {
+            return md.replace(/```mermaid\n([\s\S]*?)```/g, (_, code) => {
+                const id = 'mermaid-' + Math.random().toString(36).substr(2, 8);
+                return `<div class="mermaid-wrapper"><div class="mermaid" id="${id}">${code.trim()}</div></div>`;
+            });
+        }
 
-      <div class="doc-card" onclick="loadDocByFileName('Member_3_Guide.md', 'Member 3 — Trigger & Async Apex')" style="--card-accent:#c4b5fd">
-        <div class="card-header">
-          <div class="member-badge m3" style="width:36px;height:36px;font-size:16px">3</div>
-          <span class="card-size">16 KB</span>
-        </div>
-        <div class="doc-title">Member 3 — Trigger & Async Apex</div>
-        <div class="doc-desc">13 tasks: AttemptTrigger + Handler (bulkified), LeaderboardRefreshBatch, Scheduled Job, 2 Test Classes.</div>
-        <div class="card-footer">
-          <span class="tag" style="background:#3b1f5e;color:#c4b5fd">13 Tasks</span>
-          <span class="tag" style="background:#3b1f5e;color:#c4b5fd">4.2 giờ</span>
-        </div>
-      </div>
+        // Loading bar
+        function setLoading(on) {
+            const bar = document.getElementById('loadingBar');
+            bar.className = 'loading-bar' + (on ? ' active' : ' done');
+            if (!on) setTimeout(() => bar.className = 'loading-bar', 400);
+        }
 
-      <div class="doc-card" onclick="loadDocByFileName('Member_4_Guide.md', 'Member 4 — LWC UI')" style="--card-accent:#f9a8d4">
-        <div class="card-header">
-          <div class="member-badge m4" style="width:36px;height:36px;font-size:16px">4</div>
-          <span class="card-size">29 KB</span>
-        </div>
-        <div class="doc-title">Member 4 — LWC UI</div>
-        <div class="doc-desc">13 tasks: mockExamFlow, dashboardView (Stats + Leaderboard), adminQuestionManage, newQuestionModal — full HTML/JS.</div>
-        <div class="card-footer">
-          <span class="tag" style="background:#4a1d3f;color:#f9a8d4">13 Tasks</span>
-          <span class="tag" style="background:#4a1d3f;color:#f9a8d4">4.2 giờ</span>
-        </div>
-      </div>
+        // Active nav
+        let activeNavEl = document.getElementById('nav-home');
+        function setActiveNav(el) {
+            if (activeNavEl) activeNavEl.classList.remove('active');
+            if (el) { el.classList.add('active'); activeNavEl = el; }
+        }
 
-      <div class="doc-card" onclick="loadDocByFileName('Member_5_Guide.md', 'Member 5 — Flows & QA')" style="--card-accent:#fcd34d">
-        <div class="card-header">
-          <div class="member-badge m5" style="width:36px;height:36px;font-size:16px">5</div>
-          <span class="card-size">15 KB</span>
-        </div>
-        <div class="doc-title">Member 5 — Flows & QA</div>
-        <div class="doc-desc">13 tasks: Record-Triggered Flow, Screen Flow Wizard, Approval Process, Lightning App, E2E Checklist 23 steps.</div>
-        <div class="card-footer">
-          <span class="tag" style="background:#4a2e0f;color:#fcd34d">13 Tasks</span>
-          <span class="tag" style="background:#4a2e0f;color:#fcd34d">3.2 giờ</span>
-        </div>
-      </div>
-    </div>
-  </div>
+        function showHome() {
+            document.getElementById('homeView').style.display = '';
+            document.getElementById('docView').classList.remove('visible');
+            document.getElementById('topbarTitle').textContent = '📁 Trang chủ';
+            document.getElementById('topbarFile').textContent = '';
+            setActiveNav(document.getElementById('nav-home'));
+            closeSidebar();
+        }
 
-  <!-- DOC VIEW -->
-  <div class="doc-view" id="docView">
-    <div class="markdown-body" id="markdownContent"></div>
-  </div>
-</main>
+        async function loadDoc(filename, title, navEl) {
+            setLoading(true);
+            setActiveNav(navEl);
+            document.getElementById('topbarTitle').textContent = title;
+            document.getElementById('topbarFile').textContent = filename;
+            document.getElementById('homeView').style.display = 'none';
+            const docView = document.getElementById('docView');
+            docView.classList.add('visible');
+            document.getElementById('markdownContent').innerHTML = '<p style="color:var(--text-dim);padding:20px 0">⏳ Đang tải...</p>';
+            closeSidebar();
+            window.scrollTo(0, 0);
 
-<!-- Mobile toggle -->
-<button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
+            try {
+                const res = await fetch(filename + '?t=' + Date.now());
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const raw = await res.text();
+                const processed = preprocessMermaid(raw);
+                const html = marked.parse(processed);
+                document.getElementById('markdownContent').innerHTML = html;
 
-<script>
-  // ── CONFIG ──
-  const DOCS = {
-    'Salesforce_Bootcamp_Manager_BDD.md': 'BDD — Basic Design Document',
-    'Build_Plan_Master.md': 'Master Build Plan',
-    'Flow.md': 'Business Process Flows',
-    'Diagram.md': 'ERD Data Model Diagram',
-    'Member_1_Guide.md': 'Member 1 — Data Model & Security',
-    'Member_2_Guide.md': 'Member 2 — Apex Backend',
-    'Member_3_Guide.md': 'Member 3 — Trigger & Async Apex',
-    'Member_4_Guide.md': 'Member 4 — LWC UI',
-    'Member_5_Guide.md': 'Member 5 — Flows & QA',
-  };
+                // Highlight code blocks (safe — degrade if hljs not ready)
+                try {
+                    document.querySelectorAll('#markdownContent pre code').forEach(el => {
+                        hljs.highlightElement(el);
+                    });
+                } catch (e) { console.warn('hljs:', e); }
 
-  // ── MARKED CONFIG ──
-  marked.setOptions({
-    breaks: true,
-    gfm: true,
-  });
+                // Render mermaid (safe — degrade if no diagrams / library error)
+                try {
+                    const mermaidNodes = document.querySelectorAll('#markdownContent .mermaid');
+                    if (mermaidNodes.length > 0) {
+                        await mermaid.run({ nodes: mermaidNodes });
+                    }
+                } catch (e) { console.warn('mermaid:', e); }
 
-  // ── MERMAID CONFIG ──
-  mermaid.initialize({
-    startOnLoad: false,
-    theme: 'dark',
-    themeVariables: {
-      background: '#161b22',
-      primaryColor: '#1b5e20',
-      primaryTextColor: '#e6edf3',
-      primaryBorderColor: '#30363d',
-      lineColor: '#4caf50',
-      secondaryColor: '#1f2937',
-      tertiaryColor: '#0d1117',
-      fontSize: '14px',
-    },
-  });
-
-  // Replace mermaid code blocks with divs before marked renders
-  function preprocessMermaid(md) {
-    return md.replace(/```mermaid\n([\s\S]*?)```/g, (_, code) => {
-      const id = 'mermaid-' + Math.random().toString(36).substr(2, 8);
-      return `<div class="mermaid-wrapper"><div class="mermaid" id="${id}">${code.trim()}</div></div>`;
-    });
-  }
-
-  // Loading bar
-  function setLoading(on) {
-    const bar = document.getElementById('loadingBar');
-    bar.className = 'loading-bar' + (on ? ' active' : ' done');
-    if (!on) setTimeout(() => bar.className = 'loading-bar', 400);
-  }
-
-  // Active nav
-  let activeNavEl = document.getElementById('nav-home');
-  function setActiveNav(el) {
-    if (activeNavEl) activeNavEl.classList.remove('active');
-    if (el) { el.classList.add('active'); activeNavEl = el; }
-  }
-
-  function showHome() {
-    document.getElementById('homeView').style.display = '';
-    document.getElementById('docView').classList.remove('visible');
-    document.getElementById('topbarTitle').textContent = '📁 Trang chủ';
-    document.getElementById('topbarFile').textContent = '';
-    setActiveNav(document.getElementById('nav-home'));
-    closeSidebar();
-  }
-
-  async function loadDoc(filename, title, navEl) {
-    setLoading(true);
-    setActiveNav(navEl);
-    document.getElementById('topbarTitle').textContent = title;
-    document.getElementById('topbarFile').textContent = filename;
-    document.getElementById('homeView').style.display = 'none';
-    const docView = document.getElementById('docView');
-    docView.classList.add('visible');
-    document.getElementById('markdownContent').innerHTML = '<p style="color:var(--text-dim);padding:20px 0">⏳ Đang tải...</p>';
-    closeSidebar();
-    window.scrollTo(0, 0);
-
-    try {
-      const res = await fetch(filename + '?t=' + Date.now());
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const raw = await res.text();
-      const processed = preprocessMermaid(raw);
-      const html = marked.parse(processed);
-      document.getElementById('markdownContent').innerHTML = html;
-
-      // Highlight code blocks
-      document.querySelectorAll('#markdownContent pre code').forEach(el => {
-        hljs.highlightElement(el);
-      });
-
-      // Render mermaid
-      await mermaid.run({ nodes: document.querySelectorAll('#markdownContent .mermaid') });
-
-    } catch (err) {
-      document.getElementById('markdownContent').innerHTML =
-        `<p style="color:#f87171">❌ Không thể tải tài liệu: <code>${filename}</code></p>
+            } catch (err) {
+                document.getElementById('markdownContent').innerHTML =
+                    `<p style="color:#f87171">❌ Không thể tải tài liệu: <code>${filename}</code></p>
          <p style="color:var(--text-dim);margin-top:8px">Lỗi: ${err.message}</p>
          <p style="color:var(--text-dim);margin-top:8px">💡 Đảm bảo file <code>${filename}</code> nằm cùng thư mục với <code>index.html</code> và server đang chạy.</p>`;
-    }
-    setLoading(false);
-  }
+            }
+            setLoading(false);
+        }
 
-  function loadDocByFileName(filename, title) {
-    // Find the nav item that matches
-    const navItems = document.querySelectorAll('.nav-item');
-    let found = null;
-    navItems.forEach(el => {
-      if (el.getAttribute('onclick') && el.getAttribute('onclick').includes(filename)) {
-        found = el;
-      }
-    });
-    loadDoc(filename, title, found);
-  }
+        function loadDocByFileName(filename, title) {
+            // Find the nav item that matches
+            const navItems = document.querySelectorAll('.nav-item');
+            let found = null;
+            navItems.forEach(el => {
+                if (el.getAttribute('onclick') && el.getAttribute('onclick').includes(filename)) {
+                    found = el;
+                }
+            });
+            loadDoc(filename, title, found);
+        }
 
-  // Mobile sidebar
-  function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('open');
-  }
-  function closeSidebar() {
-    document.getElementById('sidebar').classList.remove('open');
-  }
+        // Mobile sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+        }
 
-  // Hash-based routing
-  window.addEventListener('hashchange', handleHash);
-  function handleHash() {
-    const hash = location.hash.slice(1);
-    if (!hash) { showHome(); return; }
-    if (DOCS[hash]) loadDocByFileName(hash, DOCS[hash]);
-  }
+        // Hash-based routing
+        window.addEventListener('hashchange', handleHash);
+        function handleHash() {
+            const hash = location.hash.slice(1);
+            if (!hash) { showHome(); return; }
+            if (DOCS[hash]) loadDocByFileName(hash, DOCS[hash]);
+        }
 
-  // Update hash when loading a doc
-  const origLoadDoc = loadDoc;
+        // Update hash when loading a doc
+        const origLoadDoc = loadDoc;
 
-  // Init
-  handleHash();
-</script>
+        // Init
+        handleHash();
+    </script>
 </body>
+
 </html>

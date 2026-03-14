@@ -948,9 +948,28 @@
         };
 
         // ── MARKED CONFIG ──
+        // Custom renderer: intercept ```mermaid blocks
+        const renderer = new marked.Renderer();
+        renderer.code = function (code, language) {
+            // Handle both old marked API (code as string) and new API (token object)
+            let lang = language;
+            let src = code;
+            if (typeof code === 'object' && code !== null) {
+                lang = code.lang || '';
+                src = code.text || '';
+            }
+            if (lang === 'mermaid') {
+                const id = 'mermaid-' + Math.random().toString(36).substr(2, 8);
+                return `<div class="mermaid-wrapper"><div class="mermaid" id="${id}">${src}</div></div>`;
+            }
+            // Default: syntax-highlighted code block
+            return `<pre><code class="language-${lang || ''}">${src}</code></pre>`;
+        };
+
         marked.setOptions({
             breaks: true,
             gfm: true,
+            renderer: renderer,
         });
 
         // ── MERMAID CONFIG ──
@@ -969,13 +988,6 @@
             },
         });
 
-        // Replace mermaid code blocks with divs before marked renders
-        function preprocessMermaid(md) {
-            return md.replace(/```mermaid\n([\s\S]*?)```/g, (_, code) => {
-                const id = 'mermaid-' + Math.random().toString(36).substr(2, 8);
-                return `<div class="mermaid-wrapper"><div class="mermaid" id="${id}">${code.trim()}</div></div>`;
-            });
-        }
 
         // Loading bar
         function setLoading(on) {
@@ -1016,8 +1028,7 @@
                 const res = await fetch(filename + '?t=' + Date.now());
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 const raw = await res.text();
-                const processed = preprocessMermaid(raw);
-                const html = marked.parse(processed);
+                const html = marked.parse(raw);
                 document.getElementById('markdownContent').innerHTML = html;
 
                 // Highlight code blocks (safe — degrade if hljs not ready)

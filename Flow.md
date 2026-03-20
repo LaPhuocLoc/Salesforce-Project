@@ -2,162 +2,162 @@
 
 ---
 
-## Flow 1: Student Enrollment Process
+## Flow 1: Quy trình Đăng ký Chứng chỉ (Student Enrollment)
 
 ```mermaid
 flowchart TD
-    A([Start]) --> B[Student opens Lightning App]
-    B --> C[Launch Screen Flow: Exam Registration Wizard]
-    C --> D[Step 1: Display available Certifications from Certification__c]
-    D --> E{Student selects a Certification?}
-    E -- No --> D
-    E -- Yes --> F[Step 2: Show confirmation screen with Passing Score]
-    F --> G{Student confirms?}
-    G -- Cancel --> Z([End: Abandoned])
-    G -- Confirm --> H[Step 3: Create Enrollment__c record - Status = Pending]
-    H --> I[Record-Triggered Flow fires: Set Enrolled_Date__c = NOW]
-    I --> J[System submits Enrollment for Approval Process]
-    J --> K[Admin receives approval notification]
-    K --> L{Admin Decision}
-    L -- Approve --> M[Status = Approved - Student can take Mock Exams]
-    L -- Reject --> N[Status = Rejected - Student is notified]
-    M --> O([End: Approved])
-    N --> P([End: Rejected])
+    A([Bắt đầu]) --> B[Student mở Lightning App]
+    B --> C[Khởi chạy Screen Flow: Exam Registration Wizard]
+    C --> D[Bước 1: Hiển thị danh sách Chứng chỉ từ Certification__c]
+    D --> E{Student đã chọn Chứng chỉ?}
+    E -- Chưa --> D
+    E -- Đã chọn --> F[Bước 2: Hiển thị màn hình xác nhận kèm Passing Score]
+    F --> G{Student xác nhận?}
+    G -- Hủy --> Z([Kết thúc: Bỏ dở])
+    G -- Xác nhận --> H[Bước 3 - Tạo bản ghi Enrollment__c - Status = Pending]
+    H --> I[Record-Triggered Flow tự kích hoạt - Gán Enrolled_Date__c = NOW]
+    I --> J[Hệ thống gửi Enrollment vào Approval Process]
+    J --> K[Admin nhận thông báo yêu cầu phê duyệt]
+    K --> L{Quyết định của Admin}
+    L -- Phê duyệt --> M[Status = Approved - Student được phép làm Mock Exam]
+    L -- Từ chối --> N[Status = Rejected - Student nhận thông báo từ chối]
+    M --> O([Kết thúc: Được duyệt])
+    N --> P([Kết thúc: Bị từ chối])
 ```
 
 ---
 
-## Flow 2: Mock Exam Process
+## Flow 2: Quy trình Thi thử (Mock Exam)
 
 ```mermaid
 flowchart TD
-    A([Start]) --> B[Student navigates to Mock Exam Page]
-    B --> C[Select Certification from dropdown]
-    C --> D[Apex call: BootcampController.getQuestions where Is_Active__c = true]
-    D --> E{Questions found?}
-    E -- No --> F[Show error: No active questions available]
-    F --> Z([End])
-    E -- Yes --> G[Display Question 1 with Options A B C D]
-    G --> H{Student selects an answer?}
-    H -- Pending --> H
-    H -- Selected --> I[Store answer in JS client array: questionId + selectedOption]
-    I --> J{More questions remaining?}
-    J -- Next --> K[Display next question]
+    A([Bắt đầu]) --> B[Student vào trang Mock Exam]
+    B --> C[Chọn Chứng chỉ từ dropdown]
+    C --> D[Gọi Apex: BootcampController.getQuestions với điều kiện Is_Active__c = true]
+    D --> E{Tìm thấy câu hỏi?}
+    E -- Không --> F[Hiển thị lỗi: Không có câu hỏi nào đang hoạt động]
+    F --> Z([Kết thúc])
+    E -- Có --> G[Hiển thị Câu hỏi 1 kèm 4 đáp án A B C D]
+    G --> H{Student đã chọn đáp án?}
+    H -- Chưa --> H
+    H -- Đã chọn --> I[Lưu đáp án vào mảng JS phía client: questionId + selectedOption]
+    I --> J{Còn câu hỏi nào không?}
+    J -- Tiếp theo --> K[Hiển thị câu hỏi kế tiếp]
     K --> H
-    J -- Previous --> L[Navigate to previous question]
+    J -- Quay lại --> L[Điều hướng về câu hỏi trước]
     L --> H
-    J -- Submit --> M[Send answer array to Apex via Imperative Call]
-    M --> N[MockExamService.calculateScore: compare each Selected_Option vs Correct_Answer__c]
-    N --> O[Compute Score = Correct Answers divided by Total Questions x 100]
-    O --> P{Score >= Certification Passing_Score__c?}
-    P -- Yes --> Q[Status = Pass]
-    P -- No --> R[Status = Fail]
-    Q --> S[DML Insert: Attempt__c with Score + Status + Attempt_Date]
+    J -- Nộp bài --> M[Gửi mảng đáp án lên Apex qua Imperative Call]
+    M --> N[MockExamService.calculateScore: so sánh từng Selected_Option với Correct_Answer__c]
+    N --> O[Tính điểm = Số đáp án đúng chia Tổng số câu nhân 100]
+    O --> P{Điểm >= Passing_Score__c của Chứng chỉ?}
+    P -- Đạt --> Q[Status = Pass]
+    P -- Không đạt --> R[Status = Fail]
+    Q --> S[DML Insert: Attempt__c với Score + Status + Attempt_Date]
     R --> S
-    S --> T[DML Insert: List of Attempt_Answer__c with Is_Correct__c Formula]
-    T --> U[AttemptTrigger fires: After Insert on Attempt__c]
-    U --> V[AttemptTriggerHandler: Update related Enrollment__c if needed]
-    V --> W[Return Score + Status to LWC component]
-    W --> X[Display Result Modal: Score % and Pass/Fail badge]
-    X --> Y([End: Attempt Saved])
+    S --> T[DML Insert: Danh sách Attempt_Answer__c kèm Formula Is_Correct__c]
+    T --> U[AttemptTrigger tự kích hoạt: After Insert trên Attempt__c]
+    U --> V[AttemptTriggerHandler: Cập nhật Enrollment__c liên quan nếu cần]
+    V --> W[Trả Score + Status về LWC component]
+    W --> X[Hiển thị Modal Kết quả: Điểm % và huy hiệu Pass/Fail]
+    X --> Y([Kết thúc: Bài thi đã được lưu])
 ```
 
 ---
 
-## Flow 3: Dashboard Data Loading
+## Flow 3: Tải dữ liệu Dashboard (Dashboard Data Loading)
 
 ```mermaid
 flowchart TD
-    A([Start]) --> B[Student opens Home Page]
-    B --> C[dashboardView LWC loads]
-    C --> D[Wire Adapter calls: BootcampController.getDashboardStats with currentUserId]
-    D --> E[SOQL: Query Attempt__c for current user ORDER BY Attempt_Date DESC]
-    E --> F{Any Attempts found?}
-    F -- No --> G[Next Action = Take First Mock Exam / Readiness = Not Ready]
-    F -- Yes --> H[Calculate Average Score from all Score__c]
-    H --> I{Average Score >= 80%?}
-    I -- Yes --> J[Readiness = Ready]
-    I -- No --> K{Average Score >= 65%?}
-    K -- Yes --> L[Readiness = At Risk]
-    K -- No --> M[Readiness = Not Ready]
-    J --> N[Check last Attempt Score vs Passing_Score__c]
+    A([Bắt đầu]) --> B[Student mở Home Page]
+    B --> C[LWC dashboardView được tải]
+    C --> D[Wire Adapter gọi: BootcampController.getDashboardStats với User hiện tại]
+    D --> E[SOQL: Truy vấn Attempt__c của User hiện tại ORDER BY Attempt_Date DESC]
+    E --> F{Có bài thi nào không?}
+    F -- Không --> G[Next Action = Take First Mock Exam / Readiness = Not Ready]
+    F -- Có --> H[Tính điểm trung bình từ toàn bộ Score__c]
+    H --> I{Điểm trung bình >= 80%?}
+    I -- Đúng --> J[Readiness = Ready]
+    I -- Sai --> K{Điểm trung bình >= 65%?}
+    K -- Đúng --> L[Readiness = At Risk]
+    K -- Sai --> M[Readiness = Not Ready]
+    J --> N[Kiểm tra điểm bài thi cuối so với Passing_Score__c]
     L --> N
     M --> N
-    N --> O{Last Score >= Passing Score?}
-    O -- Yes --> P[Next Action = Ready for Certification]
-    O -- No --> Q[Next Action = Retake Exam]
-    G --> R[Return DashboardWrapper to LWC]
+    N --> O{Điểm bài cuối >= Passing Score?}
+    O -- Đúng --> P[Next Action = Ready for Certification]
+    O -- Sai --> Q[Next Action = Retake Exam]
+    G --> R[Trả DashboardWrapper về LWC]
     P --> R
     Q --> R
-    R --> S[SOQL: Top 5 users GROUP BY Student__c AVG Score DESC LIMIT 5]
-    S --> T[Return Leaderboard list to LWC]
-    T --> U[Render Dashboard: Stats Cards + Progress Bar + Leaderboard + Recent Attempts]
-    U --> V([End: Dashboard Displayed])
+    R --> S[SOQL: Top 5 User GROUP BY Student__c AVG Score DESC LIMIT 5]
+    S --> T[Trả danh sách Leaderboard về LWC]
+    T --> U[Render Dashboard: Thẻ Thống kê + Progress Bar + Leaderboard + Bảng Bài thi gần nhất]
+    U --> V([Kết thúc: Dashboard đã hiển thị])
 ```
 
 ---
 
-## Flow 4: Admin Question Management
+## Flow 4: Admin Quản lý Câu hỏi (Admin Question Management)
 
 ```mermaid
 flowchart TD
-    A([Start]) --> B[Admin navigates to Admin Questions Tab]
-    B --> C[adminQuestionManage LWC loads]
+    A([Bắt đầu]) --> B[Admin vào Tab Admin Questions]
+    B --> C[LWC adminQuestionManage được tải]
     C --> D[Wire: BootcampController.getAllQuestions]
-    D --> E[Display lightning-datatable with all Questions]
-    E --> F{Admin Action?}
-    F -- New --> G[Open newQuestionModal with lightning-record-edit-form]
-    G --> H[Admin fills in Certification + Question Text + Options A B C D + Correct Answer]
-    H --> I{Validation Rule passes?}
-    I -- Fail --> J[Show error: Must fill all 4 options]
+    D --> E[Hiển thị lightning-datatable với toàn bộ câu hỏi]
+    E --> F{Hành động của Admin?}
+    F -- Tạo mới --> G[Mở newQuestionModal với lightning-record-edit-form]
+    G --> H[Admin điền Certification + Nội dung câu hỏi + 4 đáp án A B C D + Đáp án đúng]
+    H --> I{Validation Rule thành công?}
+    I -- Thất bại --> J[Hiển thị lỗi: Phải điền đủ cả 4 đáp án]
     J --> H
-    I -- Pass --> K[DML Insert: Question__c with Is_Active__c = true]
-    K --> L[Refresh datatable]
+    I -- Thành công --> K[DML Insert: Question__c với Is_Active__c = true]
+    K --> L[Làm mới datatable]
     L --> E
-    F -- Edit --> M[Open modal pre-populated with existing record]
-    M --> N[Admin updates fields]
-    N --> O{Validation passes?}
-    O -- Fail --> P[Show error message]
+    F -- Chỉnh sửa --> M[Mở modal đã điền sẵn thông tin bản ghi hiện tại]
+    M --> N[Admin cập nhật các trường]
+    N --> O{Validation thành công?}
+    O -- Thất bại --> P[Hiển thị thông báo lỗi]
     P --> N
-    O -- Pass --> Q[DML Update: Question__c]
+    O -- Thành công --> Q[DML Update: Question__c]
     Q --> L
-    F -- Activate/Deactivate --> R[Toggle Is_Active__c boolean]
+    F -- Kích hoạt/Vô hiệu hóa --> R[Đảo trạng thái boolean Is_Active__c]
     R --> S{Is_Active__c = true?}
-    S -- Active --> T[Question appears in exam pool]
-    S -- Inactive --> U[Question hidden from exam pool]
+    S -- Đang hoạt động --> T[Câu hỏi xuất hiện trong pool đề thi]
+    S -- Vô hiệu hóa --> U[Câu hỏi bị ẩn khỏi pool đề thi]
     T --> L
     U --> L
-    F -- Done --> V([End])
+    F -- Xong --> V([Kết thúc])
 ```
 
 ---
 
-## Flow 5: Record-Triggered Flow — Auto Set Enrollment Date
+## Flow 5: Record-Triggered Flow — Tự động gán Ngày đăng ký
 
 ```mermaid
 flowchart TD
-    A([Trigger: Enrollment__c After Insert]) --> B{Enrolled_Date__c is NULL?}
-    B -- Yes --> C[Set Enrolled_Date__c = NOW]
-    C --> D[Update Enrollment__c record]
-    D --> E([End: Date stamped])
-    B -- No --> F([End: No action needed])
+    A([Enrollment__c After Insert]) --> B{Enrolled_Date__c đang trống?}
+    B -- Đúng --> C[Gán Enrolled_Date__c = NOW]
+    C --> D[Cập nhật bản ghi Enrollment__c]
+    D --> E([Kết thúc: Đã đóng dấu ngày])
+    B -- Sai --> F([Kết thúc: Không cần xử lý])
 ```
 
 ---
 
-## Flow 6: Approval Process — Enrollment Approval
+## Flow 6: Approval Process — Phê duyệt Đăng ký
 
 ```mermaid
 flowchart TD
-    A([Student submits Enrollment__c for Approval]) --> B[Approval Process: Enrollment_Approval initiates]
-    B --> C[System sends approval request to assigned Admin Approver]
-    C --> D{Admin reviews Enrollment record}
-    D -- Approve --> E[Final Action: Update Status__c = Approved]
-    D -- Reject --> F[Rejection Action: Update Status__c = Rejected]
-    E --> G[Student can now take Mock Exams for this Certification]
-    F --> H[Student is notified of rejection]
-    G --> I([End: Approved])
-    H --> J([End: Rejected])
+    A([Student gửi Enrollment__c để phê duyệt]) --> B[Approval Process: Enrollment_Approval khởi động]
+    B --> C[Hệ thống gửi yêu cầu phê duyệt tới Admin được chỉ định]
+    C --> D{Admin xem xét bản ghi Enrollment}
+    D -- Phê duyệt --> E[Final Action: Cập nhật Status__c = Approved]
+    D -- Từ chối --> F[Rejection Action: Cập nhật Status__c = Rejected]
+    E --> G[Student có thể bắt đầu làm Mock Exam cho Chứng chỉ này]
+    F --> H[Student nhận thông báo bị từ chối]
+    G --> I([Kết thúc: Được phê duyệt])
+    H --> J([Kết thúc: Bị từ chối])
 ```
 
 ---
@@ -166,15 +166,15 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A([Scheduled Job triggers Daily at 02:00 AM]) --> B[LeaderboardRefreshBatch Schedulable.execute]
-    B --> C[Database.executeBatch called with Batch size = 200]
-    C --> D[start method: QueryLocator returns all Attempt__c records]
-    D --> E[execute method: Process each batch chunk]
-    E --> F[Aggregate AVG Score__c GROUP BY Student__c]
-    F --> G{More chunks?}
-    G -- Yes --> E
-    G -- No --> H[finish method: Log batch completion]
-    H --> I([End: Leaderboard cache refreshed])
+    A([Scheduled Job tự kích hoạt mỗi ngày lúc 02:00 AM]) --> B[LeaderboardRefreshBatch Schedulable.execute]
+    B --> C[Database.executeBatch được gọi với kích thước Batch = 200]
+    C --> D[Phương thức start: QueryLocator trả về toàn bộ bản ghi Attempt__c]
+    D --> E[Phương thức execute: Xử lý từng chunk dữ liệu]
+    E --> F[Tính tổng hợp AVG Score__c GROUP BY Student__c]
+    F --> G{Còn chunk nào không?}
+    G -- Còn --> E
+    G -- Hết --> H[Phương thức finish: Ghi log hoàn thành batch]
+    H --> I([Kết thúc: Bảng xếp hạng đã được làm mới])
 ```
 
 ---
@@ -183,14 +183,14 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A([DML Insert on Attempt__c]) --> B[AttemptTrigger fires: After Insert]
-    B --> C[Delegate to AttemptTriggerHandler.handleAfterInsert with Trigger.new list]
-    C --> D[Collect unique Certification__c + Student__c pairs using Set - no loop SOQL]
-    D --> E[SOQL: Query related Enrollment__c records in bulk - one query]
-    E --> F[Build Map: CertId+StudentId to Enrollment__c]
-    F --> G[Loop through new Attempts and update Enrollment fields if needed]
-    G --> H{Any Enrollment records to update?}
-    H -- Yes --> I[Single DML Update: List of Enrollment__c]
-    H -- No --> J([End: No updates needed])
-    I --> K([End: Enrollments updated])
+    A([DML Insert trên Attempt__c]) --> B[AttemptTrigger tự kích hoạt: After Insert]
+    B --> C[Delegate toàn bộ sang AttemptTriggerHandler.handleAfterInsert với danh sách Trigger.new]
+    C --> D[Gom các cặp Certification__c + Student__c độc nhất bằng Set — không SOQL trong vòng lặp]
+    D --> E[SOQL: Truy vấn hàng loạt bản ghi Enrollment__c liên quan — một câu truy vấn duy nhất]
+    E --> F[Xây dựng Map: CertId+StudentId ánh xạ tới Enrollment__c]
+    F --> G[Duyệt qua danh sách Attempt mới và cập nhật các trường Enrollment nếu cần]
+    G --> H{Có bản ghi Enrollment nào cần cập nhật không?}
+    H -- Có --> I[DML Update duy nhất: Danh sách Enrollment__c]
+    H -- Không --> J([Kết thúc: Không cần cập nhật])
+    I --> K([Kết thúc: Enrollments đã được cập nhật])
 ```

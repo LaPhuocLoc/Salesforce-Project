@@ -64,7 +64,8 @@
         /* ── SIDEBAR ── */
         .sidebar {
             width: var(--sidebar-w);
-            min-height: 100vh;
+            height: 100vh;
+            /* bắt buộc fix cứng height 100vh thay vì min-height để kích hoạt cuộn */
             background: var(--surface);
             border-right: 1px solid var(--border);
             display: flex;
@@ -430,8 +431,9 @@
 
         /* ── TOC SIDEBAR (right) ── */
         .toc-sidebar {
-            width: 340px;
-            min-height: 100vh;
+            width: 16.5%;
+            height: 100vh;
+            /* bắt buộc fix cứng height 100vh để scroll dọc */
             background: var(--surface);
             border-left: 1px solid var(--border);
             position: fixed;
@@ -441,7 +443,7 @@
             z-index: 90;
             display: none;
             flex-direction: column;
-            padding: 26px 0 24px;
+            padding: 16px 0 24px;
             transition: transform .3s;
         }
 
@@ -451,7 +453,7 @@
 
         .toc-header {
             padding: 0 16px 12px;
-            font-size: 10px;
+            font-size: 16px;
             font-weight: 700;
             letter-spacing: .1em;
             text-transform: uppercase;
@@ -467,11 +469,15 @@
             padding: 7px 16px;
             cursor: pointer;
             border-left: 2px solid transparent;
-            font-size: 12px;
+            font-size: 14px;
             color: var(--text-muted);
             transition: all .15s;
             text-decoration: none;
             line-height: 1.4;
+        }
+
+        .toc-item span {
+            font-size: 12px;
         }
 
         .toc-item:hover {
@@ -507,7 +513,7 @@
 
         /* Khi TOC visible thì thu nhỏ doc-view lại */
         .doc-view.with-toc {
-            max-width: calc(100% - 220px);
+            max-width: 80%;
         }
 
         /* ── MARKDOWN VIEWER ── */
@@ -519,6 +525,10 @@
 
         .doc-view.visible {
             display: block;
+        }
+
+        .doc-view.erd {
+            max-width: 100%;
         }
 
         .markdown-body {
@@ -1162,9 +1172,19 @@
                     }
                 } catch (e) { console.warn('mermaid:', e); }
 
-                // Build TOC nếu là Flow.md
+                // Build TOC
                 buildTOC(filename);
                 applyFlowWidths(filename);
+
+                // Xóa class 'erd' (reset) đề phòng file trước đó để lại trạng thái
+                document.querySelectorAll('.doc-view').forEach(w => w.classList.remove('erd'));
+
+                // Nếu là Diagram.md thì gán thêm class 'erd' vào các doc-view (trừ with-toc)
+                if (filename === 'Diagram.md') {
+                    document.querySelectorAll('.doc-view:not(.with-toc)').forEach(w => {
+                        w.classList.add('erd');
+                    });
+                }
 
             } catch (err) {
                 document.getElementById('markdownContent').innerHTML =
@@ -1289,14 +1309,14 @@
 
             // Bạn có thể tùy chỉnh % width cho từng Flow thoải mái ở đây:
             const widthConfig = {
-                1: '75%',  // Flow 1
+                1: '85%',  // Flow 1
                 2: '100%',  // Flow 2
-                3: '85%',  // Flow 3
+                3: '100%',  // Flow 3
                 4: '100%', // Flow 4
-                5: '45%',  // Flow 5
-                6: '70%',  // Flow 6
-                7: '55%',  // Flow 7
-                8: '65%'   // Flow 8
+                5: '65%',  // Flow 5
+                6: '80%',  // Flow 6
+                7: '65%',  // Flow 7
+                8: '75%'   // Flow 8
             };
 
             const content = document.getElementById('markdownContent');

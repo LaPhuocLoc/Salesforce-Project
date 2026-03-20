@@ -428,9 +428,91 @@
             font-weight: 600;
         }
 
+        /* ── TOC SIDEBAR (right) ── */
+        .toc-sidebar {
+            width: 340px;
+            min-height: 100vh;
+            background: var(--surface);
+            border-left: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            right: 0;
+            overflow-y: auto;
+            z-index: 90;
+            display: none;
+            flex-direction: column;
+            padding: 26px 0 24px;
+            transition: transform .3s;
+        }
+
+        .toc-sidebar.visible {
+            display: flex;
+        }
+
+        .toc-header {
+            padding: 0 16px 12px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+
+        .toc-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 16px;
+            cursor: pointer;
+            border-left: 2px solid transparent;
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: all .15s;
+            text-decoration: none;
+            line-height: 1.4;
+        }
+
+        .toc-item:hover {
+            background: rgba(255, 255, 255, .04);
+            color: var(--text);
+        }
+
+        .toc-item.active {
+            border-left-color: var(--accent-bright);
+            background: var(--accent-glow);
+            color: var(--accent-bright);
+            font-weight: 600;
+        }
+
+        .toc-num {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--surface2);
+            color: var(--text-dim);
+            font-size: 10px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toc-item.active .toc-num {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        /* Khi TOC visible thì thu nhỏ doc-view lại */
+        .doc-view.with-toc {
+            max-width: calc(100% - 220px);
+        }
+
         /* ── MARKDOWN VIEWER ── */
         .doc-view {
-            padding: 40px 48px;
+            padding: 40px 15%;
             max-width: 900px;
             display: none;
         }
@@ -586,9 +668,12 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 24px 16px;
-            margin: 20px 0;
+            margin: 32px auto;
+            /* căn giữa diagram */
             overflow-x: auto;
             width: 100%;
+            /* default */
+            min-width: 340px;
         }
 
         .mermaid-wrapper .mermaid {
@@ -619,6 +704,16 @@
             font-size: 20px;
             color: white;
             box-shadow: 0 4px 20px rgba(0, 0, 0, .5);
+        }
+
+        @media (max-width: 1100px) {
+            .toc-sidebar {
+                display: none !important;
+            }
+
+            .doc-view.with-toc {
+                max-width: 900px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -942,6 +1037,12 @@
         </div>
     </main>
 
+    <!-- TOC SIDEBAR (right) -->
+    <aside class="toc-sidebar" id="tocSidebar">
+        <div class="toc-header" id="tocHeader">📋 Mục lục</div>
+        <div id="tocList"></div>
+    </aside>
+
     <!-- Mobile toggle -->
     <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
 
@@ -1021,6 +1122,9 @@
             document.getElementById('topbarTitle').textContent = '📁 Trang chủ';
             document.getElementById('topbarFile').textContent = '';
             setActiveNav(document.getElementById('nav-home'));
+            // Ẩn TOC sidebar khi về home
+            document.getElementById('tocSidebar').classList.remove('visible');
+            document.getElementById('docView').classList.remove('with-toc');
             closeSidebar();
         }
 
@@ -1058,6 +1162,10 @@
                     }
                 } catch (e) { console.warn('mermaid:', e); }
 
+                // Build TOC nếu là Flow.md
+                buildTOC(filename);
+                applyFlowWidths(filename);
+
             } catch (err) {
                 document.getElementById('markdownContent').innerHTML =
                     `<p style="color:#f87171">❌ Không thể tải tài liệu: <code>${filename}</code></p>
@@ -1068,7 +1176,6 @@
         }
 
         function loadDocByFileName(filename, title) {
-            // Find the nav item that matches
             const navItems = document.querySelectorAll('.nav-item');
             let found = null;
             navItems.forEach(el => {
@@ -1077,6 +1184,155 @@
                 }
             });
             loadDoc(filename, title, found);
+        }
+
+        // ── TOC SIDEBAR ──
+        function buildTOC(filename) {
+            const tocSidebar = document.getElementById('tocSidebar');
+            const tocList = document.getElementById('tocList');
+            const docView = document.getElementById('docView');
+            const tocHeader = document.getElementById('tocHeader');
+
+            // Đổi tiêu đề sidebar tùy loại file
+            if (tocHeader) {
+                tocHeader.textContent = filename === 'Flow.md' ? '📋 Mục lục Flow' : '📋 Mục lục';
+            }
+
+            // Lấy tất cả h2, h3 trong content
+            const headings = document.querySelectorAll('#markdownContent h2, #markdownContent h3');
+            if (headings.length === 0) {
+                tocSidebar.classList.remove('visible');
+                docView.classList.remove('with-toc');
+                return;
+            }
+
+            // Gán id cho từng heading để scroll-to
+            tocList.innerHTML = '';
+            headings.forEach((h, idx) => {
+                const id = 'toc-section-' + idx;
+                h.id = id;
+                const text = h.textContent.trim();
+
+                const item = document.createElement('a');
+                item.className = 'toc-item';
+                // Thụt lề với H3
+                if (h.tagName === 'H3') {
+                    item.style.paddingLeft = '32px';
+                    item.style.fontSize = '11.5px';
+                }
+                item.id = 'toc-item-' + idx;
+                item.href = '#' + id;
+
+                let prefix = '';
+                let label = text;
+
+                if (filename === 'Flow.md') {
+                    // Logic cũ của Flow
+                    const numMatch = text.match(/flow\s*(\d+)/i);
+                    prefix = numMatch ? numMatch[1] : (idx + 1);
+                    const labelMatch = text.match(/Flow \d+[:：\-]?\s*(.*)/i);
+                    label = labelMatch ? labelMatch[1].trim() : text;
+                } else {
+                    // Chặt text để lấy số mục lục (vd "1. ", "1.1. ")
+                    // regex bắt chuỗi số chấm ở đầu
+                    const pMatch = text.match(/^([\d\.]+)\s+(.*)/);
+                    if (pMatch) {
+                        prefix = pMatch[1];
+                        label = pMatch[2];
+                    }
+                }
+
+                if (prefix) {
+                    // Tự động kéo dãn width badge-num nếu số dài (vd 1.12.)
+                    const wideStyle = prefix.length > 2 ? 'width:auto;padding:0 6px;border-radius:6px;' : '';
+                    item.innerHTML = `<span class="toc-num" style="${wideStyle}">${prefix}</span><span style="flex:1">${label}</span>`;
+                } else {
+                    item.innerHTML = `<span style="flex:1">${label}</span>`;
+                }
+
+                item.addEventListener('click', e => {
+                    e.preventDefault();
+                    h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+                tocList.appendChild(item);
+            });
+
+            tocSidebar.classList.add('visible');
+            docView.classList.add('with-toc');
+
+            // Highlight TOC theo scroll
+            setupTOCScrollSpy(headings);
+        }
+
+        let scrollSpyCleanup = null;
+        function setupTOCScrollSpy(headings) {
+            if (scrollSpyCleanup) scrollSpyCleanup();
+            const handler = () => {
+                let current = 0;
+                headings.forEach((h, idx) => {
+                    if (h.getBoundingClientRect().top <= 100) current = idx;
+                });
+                document.querySelectorAll('.toc-item').forEach((el, idx) => {
+                    el.classList.toggle('active', idx === current);
+                });
+            };
+            // Attach to .main scroll (hay window)
+            window.addEventListener('scroll', handler, { passive: true });
+            handler();
+            scrollSpyCleanup = () => window.removeEventListener('scroll', handler);
+        }
+
+        // ── FLOW WIDTHS ──
+        // Cấu hình width riêng cho từng Flow
+        function applyFlowWidths(filename) {
+            if (filename !== 'Flow.md') return;
+
+            // Bạn có thể tùy chỉnh % width cho từng Flow thoải mái ở đây:
+            const widthConfig = {
+                1: '75%',  // Flow 1
+                2: '100%',  // Flow 2
+                3: '85%',  // Flow 3
+                4: '100%', // Flow 4
+                5: '45%',  // Flow 5
+                6: '70%',  // Flow 6
+                7: '55%',  // Flow 7
+                8: '65%'   // Flow 8
+            };
+
+            const content = document.getElementById('markdownContent');
+            const wrappers = content.querySelectorAll('.mermaid-wrapper');
+
+            wrappers.forEach(wrapper => {
+                // Tìm h2 gần nhất đứng trước wrapper này
+                let prevH2 = null;
+                let el = wrapper.previousElementSibling;
+                while (el) {
+                    if (el.tagName === 'H2') { prevH2 = el; break; }
+                    el = el.previousElementSibling;
+                }
+                // Fallback: tìm trong parent trước
+                if (!prevH2) {
+                    let node = wrapper;
+                    while (node.parentElement && node.parentElement !== content) {
+                        node = node.parentElement;
+                        let sibling = node.previousElementSibling;
+                        while (sibling) {
+                            if (sibling.tagName === 'H2') { prevH2 = sibling; break; }
+                            sibling = sibling.previousElementSibling;
+                        }
+                        if (prevH2) break;
+                    }
+                }
+
+                const headingText = prevH2 ? prevH2.textContent.trim() : '';
+                const numMatch = headingText.match(/flow\s*(\d+)/i);
+
+                if (numMatch && widthConfig[numMatch[1]]) {
+                    // Dùng inline-style để override cái width mặc định 100%
+                    wrapper.style.width = widthConfig[numMatch[1]];
+                    wrapper.classList.remove('narrow'); // đề phòng còn sót
+                }
+            });
         }
 
         // Mobile sidebar

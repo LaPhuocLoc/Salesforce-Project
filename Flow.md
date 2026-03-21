@@ -33,30 +33,30 @@ flowchart TD
 flowchart TD
     A([Bắt đầu]) --> B[Student vào trang Mock Exam]
     B --> C[Chọn Chứng chỉ từ dropdown]
-    C --> D[Gọi Apex: BootcampController.getQuestions với điều kiện Is_Active__c = true]
+    C --> D[Gọi Apex: BootcampController.getQuestions - Is_Active = true, random]
     D --> E{Tìm thấy câu hỏi?}
-    E -- Không --> F[Hiển thị lỗi: Không có câu hỏi nào đang hoạt động]
+    E -- Không --> F[Hiển thị lỗi: Không có câu hỏi đang hoạt động]
     F --> Z([Kết thúc])
     E -- Có --> G[Hiển thị Câu hỏi 1 kèm 4 đáp án A B C D]
     G --> H{Student đã chọn đáp án?}
     H -- Chưa --> H
-    H -- Đã chọn --> I[Lưu đáp án vào mảng JS phía client: questionId + selectedOption]
+    H -- Đã chọn --> I[Lưu đáp án vào mảng JS: questionId + selectedOption]
     I --> J{Còn câu hỏi nào không?}
     J -- Tiếp theo --> K[Hiển thị câu hỏi kế tiếp]
     K --> H
     J -- Quay lại --> L[Điều hướng về câu hỏi trước]
     L --> H
-    J -- Nộp bài --> M[Gửi mảng đáp án lên Apex qua Imperative Call]
-    M --> N[MockExamService.calculateScore: so sánh từng Selected_Option với Correct_Answer__c]
-    N --> O[Tính điểm = Số đáp án đúng chia Tổng số câu nhân 100]
-    O --> P{Điểm >= Passing_Score__c của Chứng chỉ?}
+    J -- Nộp bài --> M[Gửi mảng đáp án lên Apex - Imperative Call]
+    M --> N[MockExamService: so sánh Selected_Option với Correct_Answer__c]
+    N --> O[Tính điểm = Số đúng / Tổng câu x 100]
+    O --> P{Điểm >= Passing_Score__c?}
     P -- Đạt --> Q[Status = Pass]
     P -- Không đạt --> R[Status = Fail]
-    Q --> S[DML Insert: Attempt__c với Score + Status + Attempt_Date]
+    Q --> S[DML Insert: Attempt__c - Score + Status + Attempt_Date]
     R --> S
-    S --> T[DML Insert: Danh sách Attempt_Answer__c kèm Formula Is_Correct__c]
-    T --> U[AttemptTrigger tự kích hoạt: After Insert trên Attempt__c]
-    U --> V[AttemptTriggerHandler: Cập nhật Enrollment__c liên quan nếu cần]
+    S --> T[AttemptTrigger fires: After Insert trên Attempt__c]
+    T --> U[AttemptTriggerHandler: Cập nhật Enrollment__c liên quan nếu cần]
+    U --> V[DML Insert: Danh sách Attempt_Answer__c - Formula Is_Correct__c tự tính]
     V --> W[Trả Score + Status về LWC component]
     W --> X[Hiển thị Modal Kết quả: Điểm % và huy hiệu Pass/Fail]
     X --> Y([Kết thúc: Bài thi đã được lưu])

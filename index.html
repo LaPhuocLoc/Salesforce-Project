@@ -698,6 +698,17 @@
             display: block;
         }
 
+        /* Allow Gantt charts to extend horizontally and scroll */
+        .mermaid-wrapper.gantt-wrapper text{
+            font-size: 12px!important;
+        }
+
+        .mermaid-wrapper.gantt-wrapper svg {
+            width: auto !important;
+            max-width: none !important;
+            min-width: 100%;
+        }
+
         /* ── MOBILE TOGGLE ── */
         .menu-toggle {
             display: none;
@@ -1083,7 +1094,11 @@
             }
             if (lang === 'mermaid') {
                 const id = 'mermaid-' + Math.random().toString(36).substr(2, 8);
-                return `<div class="mermaid-wrapper"><div class="mermaid" id="${id}">${src}</div></div>`;
+                let extraClass = '';
+                if (typeof src === 'string' && src.trim().toLowerCase().startsWith('gantt')) {
+                    extraClass = ' gantt-wrapper';
+                }
+                return `<div class="mermaid-wrapper${extraClass}"><div class="mermaid" id="${id}">${src}</div></div>`;
             }
             // Default: syntax-highlighted code block
             return `<pre><code class="language-${lang || ''}">${src}</code></pre>`;
@@ -1164,27 +1179,26 @@
                     });
                 } catch (e) { console.warn('hljs:', e); }
 
-                // Render mermaid (safe — degrade if no diagrams / library error)
+                // 1. Build TOC and apply widths FIRST so the doc-view container gets its final CSS classes (e.g. .with-toc) and specific widths
+                buildTOC(filename);
+                applyDiagramWidths(filename);
+
+                // 2. Reset or apply ERD class
+                document.querySelectorAll('.doc-view').forEach(w => w.classList.remove('erd'));
+                if (filename === 'Diagram.md') {
+                    document.querySelectorAll('.doc-view:not(.with-toc)').forEach(w => {
+                        w.classList.add('erd');
+                    });
+                }
+
+                // 3. Render mermaid LAST (when container width is perfectly stable)
+                // This prevents the SVG viewBox from being calculated against the old container width from the previous page
                 try {
                     const mermaidNodes = document.querySelectorAll('#markdownContent .mermaid');
                     if (mermaidNodes.length > 0) {
                         await mermaid.run({ nodes: mermaidNodes });
                     }
                 } catch (e) { console.warn('mermaid:', e); }
-
-                // Build TOC
-                buildTOC(filename);
-                applyFlowWidths(filename);
-
-                // Xóa class 'erd' (reset) đề phòng file trước đó để lại trạng thái
-                document.querySelectorAll('.doc-view').forEach(w => w.classList.remove('erd'));
-
-                // Nếu là Diagram.md thì gán thêm class 'erd' vào các doc-view (trừ with-toc)
-                if (filename === 'Diagram.md') {
-                    document.querySelectorAll('.doc-view:not(.with-toc)').forEach(w => {
-                        w.classList.add('erd');
-                    });
-                }
 
             } catch (err) {
                 document.getElementById('markdownContent').innerHTML =
@@ -1302,57 +1316,60 @@
             scrollSpyCleanup = () => window.removeEventListener('scroll', handler);
         }
 
-        // ── FLOW WIDTHS ──
-        // Cấu hình width riêng cho từng Flow
-        function applyFlowWidths(filename) {
-            if (filename !== 'Flow.md') return;
-
-            // Bạn có thể tùy chỉnh % width cho từng Flow thoải mái ở đây:
-            const widthConfig = {
-                1: '85%',  // Flow 1
-                2: '100%',  // Flow 2
-                3: '100%',  // Flow 3
-                4: '100%', // Flow 4
-                5: '65%',  // Flow 5
-                6: '80%',  // Flow 6
-                7: '65%',  // Flow 7
-                8: '75%'   // Flow 8
-            };
-
+        // ── DIAGRAM WIDTHS ──
+        // Cấu hình width riêng cho từng file và từng biểu đồ
+        function applyDiagramWidths(filename) {
             const content = document.getElementById('markdownContent');
             const wrappers = content.querySelectorAll('.mermaid-wrapper');
 
-            wrappers.forEach(wrapper => {
-                // Tìm h2 gần nhất đứng trước wrapper này
-                let prevH2 = null;
-                let el = wrapper.previousElementSibling;
-                while (el) {
-                    if (el.tagName === 'H2') { prevH2 = el; break; }
-                    el = el.previousElementSibling;
-                }
-                // Fallback: tìm trong parent trước
-                if (!prevH2) {
-                    let node = wrapper;
-                    while (node.parentElement && node.parentElement !== content) {
-                        node = node.parentElement;
-                        let sibling = node.previousElementSibling;
-                        while (sibling) {
-                            if (sibling.tagName === 'H2') { prevH2 = sibling; break; }
-                            sibling = sibling.previousElementSibling;
-                        }
-                        if (prevH2) break;
+            if (filename === 'Flow.md') {
+                const widthConfig = {
+                    1: '85%',  2: '100%', 3: '100%', 4: '100%',
+                    5: '65%',  6: '80%',  7: '65%',  8: '75%'
+                };
+                wrappers.forEach(wrapper => {
+                    let prevH2 = null;
+                    let el = wrapper.previousElementSibling;
+                    while (el) {
+                        if (el.tagName === 'H2') { prevH2 = el; break; }
+                        el = el.previousElementSibling;
                     }
-                }
-
-                const headingText = prevH2 ? prevH2.textContent.trim() : '';
-                const numMatch = headingText.match(/flow\s*(\d+)/i);
-
-                if (numMatch && widthConfig[numMatch[1]]) {
-                    // Dùng inline-style để override cái width mặc định 100%
-                    wrapper.style.width = widthConfig[numMatch[1]];
-                    wrapper.classList.remove('narrow'); // đề phòng còn sót
-                }
-            });
+                    if (!prevH2) {
+                        let node = wrapper;
+                        while (node.parentElement && node.parentElement !== content) {
+                            node = node.parentElement;
+                            let sibling = node.previousElementSibling;
+                            while (sibling) {
+                                if (sibling.tagName === 'H2') { prevH2 = sibling; break; }
+                                sibling = sibling.previousElementSibling;
+                            }
+                            if (prevH2) break;
+                        }
+                    }
+                    const headingText = prevH2 ? prevH2.textContent.trim() : '';
+                    const numMatch = headingText.match(/flow\s*(\d+)/i);
+                    if (numMatch && widthConfig[numMatch[1]]) {
+                        wrapper.style.width = widthConfig[numMatch[1]];
+                    }
+                });
+            } 
+            else if (filename === 'Salesforce_Bootcamp_Manager_BDD.md') {
+                // Bạn cấu hình % width cho các biểu đồ trong trang BDD (0 là biểu đồ đầu tiên xuất hiện từ trên xuống)
+                const configBDD = {
+                    0: '100%', // Ví dụ: Biểu đồ số 1 (System Context / ERD ...)
+                    1: '50%',  // Biểu đồ số 2
+                    2: '50%',  // Biểu đồ số 3
+                    3: '50%',  // Biểu đồ số 4 v.v...
+                    4: '50%',
+                    5: '50%'
+                };
+                wrappers.forEach((wrapper, index) => {
+                    // Nếu bạn đánh mục nào, nó sẽ resize mục đó
+                    if (configBDD[index]) {
+                        wrapper.style.width = configBDD[index];
+                    }
+                });
+            }
         }
 
         // Mobile sidebar
